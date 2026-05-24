@@ -20,11 +20,24 @@ export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY)
 }
 
+function normalizeProfile(raw: unknown): StoredProfile | null {
+  if (!raw || typeof raw !== 'object') return null
+  const p = raw as Partial<StoredProfile>
+  if (typeof p.adminId !== 'number' || !p.username || !p.roleName) return null
+  if (!Array.isArray(p.permissions)) return null
+  return {
+    adminId: p.adminId,
+    username: p.username,
+    roleName: p.roleName,
+    permissions: p.permissions,
+  }
+}
+
 export function getStoredProfile(): StoredProfile | null {
   const raw = localStorage.getItem(PROFILE_KEY)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as StoredProfile
+    return normalizeProfile(JSON.parse(raw))
   } catch {
     return null
   }

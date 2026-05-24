@@ -2,6 +2,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Card, Form, Input, message, Typography } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { login } from '@/api/auth'
+import { getDefaultHomePath } from '@/access/routes'
 import { saveSession } from '@/stores/auth'
 import './index.css'
 
@@ -39,7 +40,7 @@ export default function LoginPage({ onLoggedIn }: LoginPageProps) {
               })
               message.success('登录成功')
               onLoggedIn()
-              navigate('/dashboard', { replace: true })
+              navigate(getDefaultHomePath(res.permissions), { replace: true })
             } catch {
               return
             }

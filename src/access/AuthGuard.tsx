@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Spin } from 'antd'
 import { getToken } from '@/stores/auth'
-import { canAccessRoute } from '@/access/routes'
+import { canAccessRoute, getDefaultHomePath } from '@/access/routes'
 import type { StoredProfile } from '@/stores/auth'
 
 interface AuthGuardProps {
@@ -13,7 +14,11 @@ export function AuthGuard({ profile, loading }: AuthGuardProps) {
   const token = getToken()
 
   if (loading) {
-    return null
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Spin size="large" />
+      </div>
+    )
   }
 
   if (!token || !profile) {
@@ -29,10 +34,14 @@ export function AuthGuard({ profile, loading }: AuthGuardProps) {
 
 export function GuestGuard({ profile, loading }: AuthGuardProps) {
   if (loading) {
-    return null
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Spin size="large" />
+      </div>
+    )
   }
   if (profile && getToken()) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={getDefaultHomePath(profile.permissions)} replace />
   }
   return <Outlet />
 }

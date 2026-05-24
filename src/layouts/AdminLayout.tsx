@@ -1,6 +1,7 @@
 import { LogoutOutlined } from '@ant-design/icons'
 import { ProLayout } from '@ant-design/pro-components'
 import { Dropdown, Typography } from 'antd'
+import { Suspense } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { buildMenuData } from '@/access/routes'
 import type { StoredProfile } from '@/stores/auth'
@@ -64,7 +65,9 @@ export function AdminLayout({ profile, onLogout }: AdminLayoutProps) {
       }}
     >
       <div style={{ padding: 24, minHeight: 'calc(100vh - 112px)' }}>
-        <Outlet />
+        <Suspense fallback={<div style={{ padding: 24 }}>页面加载中...</div>}>
+          <Outlet />
+        </Suspense>
       </div>
     </ProLayout>
   )

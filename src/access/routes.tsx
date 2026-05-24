@@ -34,9 +34,14 @@ export const APP_ROUTES: AppRoute[] = [
   { path: '/login', name: '登录', hideInMenu: true, icon: <UserOutlined /> },
 ]
 
+function safePermissions(permissions?: string[] | null): string[] {
+  return Array.isArray(permissions) ? permissions : []
+}
+
 export function buildMenuData(permissions: string[]): MenuDataItem[] {
+  const perms = safePermissions(permissions)
   return APP_ROUTES.filter(
-    (r) => !r.hideInMenu && (!r.permission || permissions.includes(r.permission)),
+    (r) => !r.hideInMenu && (!r.permission || perms.includes(r.permission)),
   ).map((r) => ({
     path: r.path,
     name: r.name,
@@ -44,9 +49,18 @@ export function buildMenuData(permissions: string[]): MenuDataItem[] {
   }))
 }
 
+export function getDefaultHomePath(permissions: string[]): string {
+  const perms = safePermissions(permissions)
+  const home = APP_ROUTES.find(
+    (r) => !r.hideInMenu && (!r.permission || perms.includes(r.permission)),
+  )
+  return home?.path ?? '/403'
+}
+
 export function canAccessRoute(path: string, permissions: string[]): boolean {
+  const perms = safePermissions(permissions)
   const route = APP_ROUTES.find((r) => r.path === path)
   if (!route || route.path === '/403' || route.path === '/login') return true
   if (!route.permission) return true
-  return permissions.includes(route.permission)
+  return perms.includes(route.permission)
 }
